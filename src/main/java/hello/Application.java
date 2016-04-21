@@ -6,11 +6,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.PagedIterable;
-import org.kohsuke.github.PagedIterator;
+import org.eclipse.egit.github.core.RepositoryCommit;
+import org.eclipse.egit.github.core.RepositoryId;
+import org.eclipse.egit.github.core.client.GitHubClient;
+import org.eclipse.egit.github.core.service.CommitService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -31,21 +30,28 @@ public class Application {
             System.out.println(beanName);
         }
         */
-        getCommits();
-    }
-    public static void getCommits() throws IOException{
-		final int size = 25;
-		GitHub github = GitHub.connectUsingPassword("LawrenceLeo","leoboiw0w");
-		GHRepository repo = github.getRepository("scs-programming-challenge");
+		final RepositoryId repo = new RepositoryId("rails", "rails");
+		StringBuilder returnString = new StringBuilder();
+		final int size = 1;
+		final String message = "{3})   {0} by {1} on {2}";
+		final CommitService service = new CommitService();
+		int count = 0;
 		
-		PagedIterable<GHCommit> commits = repo.listCommits();
-		/*
-		for(GHCommit commit : commits){
-			System.out.println(commit.getAuthor().toString());
+		for (Collection<RepositoryCommit> commits : service.pageCommits(repo,
+				size)) {
+			for (RepositoryCommit commit : commits) {
+				String sha = commit.getSha().substring(0, 7);
+				String author = commit.getCommit().getAuthor().getName();
+				Date date = commit.getCommit().getAuthor().getDate();
+				returnString.append(MessageFormat.format(message, sha, author, date,count) + "\n");
+				count++;
+			}
 		}
-		*/
-		System.out.println("!!");
-	}
+		System.out.println(returnString.toString());
+        
+        
+    }
+    
     
     
 
